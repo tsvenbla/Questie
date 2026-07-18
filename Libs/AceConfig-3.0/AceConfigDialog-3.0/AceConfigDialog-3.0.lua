@@ -2014,6 +2014,13 @@ function AceConfigDialog:AddToBlizOptions(appName, name, parent, ...)
 		group:SetCallback("OnHide", ClearBlizPanel)
 
 		local categoryName = name or appName
+		if not (Settings and Settings.RegisterCanvasLayoutCategory) then
+			-- Old clients (e.g. Era 1.14) don't have the Settings API, use the legacy Interface Options
+			group:SetName(categoryName, parent)
+			InterfaceOptions_AddCategory(group.frame)
+			return group.frame, group.frame.name
+		end
+
 		if parent then
 			local parentID = BlizOptionsIDMap[parent] or parent
 			local category = Settings.GetCategory(parentID)

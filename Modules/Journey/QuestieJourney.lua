@@ -211,7 +211,14 @@ function QuestieJourney:SetupKeybinding()
     Questie.db.global.journeyKeybindDefaultApplied = true
 
     local currentBinding = GetBindingKey("QUESTIE_TOGGLE_JOURNEY")
-    if not currentBinding and not (C_KeyBindings and C_KeyBindings.GetBindingByKey(";")) then
+    local semicolonIsBound
+    if C_KeyBindings and C_KeyBindings.GetBindingByKey then
+        semicolonIsBound = C_KeyBindings.GetBindingByKey(";") ~= nil
+    else
+        -- Old clients (e.g. Era 1.14) don't have C_KeyBindings.GetBindingByKey
+        semicolonIsBound = GetBindingAction("SEMICOLON") ~= ""
+    end
+    if not currentBinding and not semicolonIsBound then
         SetBinding("SEMICOLON", "QUESTIE_TOGGLE_JOURNEY")
         Questie:Debug(Questie.DEBUG_INFO, "Set default keybind ';' for Questie Journey")
     end
