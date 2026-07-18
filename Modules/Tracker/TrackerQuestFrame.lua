@@ -11,6 +11,8 @@ local TrackerBaseFrame = QuestieLoader:ImportModule("TrackerBaseFrame")
 local TrackerFadeTicker = QuestieLoader:ImportModule("TrackerFadeTicker")
 ---@type TrackerUtils
 local TrackerUtils = QuestieLoader:ImportModule("TrackerUtils")
+---@type Expansions
+local Expansions = QuestieLoader:ImportModule("Expansions")
 
 local questFrame, trackerBaseFrame, trackerHeaderFrame
 
@@ -34,8 +36,18 @@ function TrackerQuestFrame.Initialize(baseFrame, headerFrame)
     questFrame:SetScript("OnEnter", TrackerFadeTicker.Unfade)
     questFrame:SetScript("OnLeave", TrackerFadeTicker.Fade)
 
-    questFrame.ScrollFrame = CreateFrame("ScrollFrame", "TrackedQuestsScrollFrame", questFrame, "ScrollFrameTemplate")
+    -- ScrollFrameTemplate does not exist on older clients (e.g. Era 1.14)
+    local scrollFrameTemplate
+    if Expansions.Current >= Expansions.Wotlk then
+        scrollFrameTemplate = "ScrollFrameTemplate"
+    else
+        scrollFrameTemplate = "UIPanelScrollFrameTemplate"
+    end
+
+    questFrame.ScrollFrame = CreateFrame("ScrollFrame", "TrackedQuestsScrollFrame", questFrame, scrollFrameTemplate)
     questFrame.ScrollFrame:SetAllPoints(questFrame)
+    -- Old clients don't set the ScrollBar key on UIPanelScrollFrameTemplate, only the global name
+    questFrame.ScrollFrame.ScrollBar = questFrame.ScrollFrame.ScrollBar or _G["TrackedQuestsScrollFrameScrollBar"]
     questFrame.ScrollFrame.ScrollBar:Hide()
 
     questFrame.ScrollChildFrame = CreateFrame("Frame", "TrackedQuestsScrollChildFrame")
