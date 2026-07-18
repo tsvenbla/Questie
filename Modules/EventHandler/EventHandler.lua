@@ -105,11 +105,13 @@ function EventHandler:RegisterLateEvents()
     Questie:RegisterEvent("CHAT_MSG_SYSTEM", _EventHandler.ChatMsgSystem)
 
     -- Spell objectives
-    Questie:RegisterEvent("NEW_RECIPE_LEARNED", function() -- Needed for some spells that don't necessarily appear in the spellbook, but are definitely spells
-        Questie:Debug(Questie.DEBUG_DEVELOP, "[EVENT] NEW_RECIPE_LEARNED")
-        QuestEventHandler.NewRecipeLearned()
-        AvailableQuests.CalculateAndDrawAll()
-    end)
+    if QuestieCompat.IsEventValid("NEW_RECIPE_LEARNED") then
+        Questie:RegisterEvent("NEW_RECIPE_LEARNED", function() -- Needed for some spells that don't necessarily appear in the spellbook, but are definitely spells
+            Questie:Debug(Questie.DEBUG_DEVELOP, "[EVENT] NEW_RECIPE_LEARNED")
+            QuestEventHandler.NewRecipeLearned()
+            AvailableQuests.CalculateAndDrawAll()
+        end)
+    end
 
     -- UI Quest Events
     Questie:RegisterEvent("UI_INFO_MESSAGE", _EventHandler.UiInfoMessage)
@@ -163,8 +165,17 @@ function EventHandler:RegisterLateEvents()
     Questie:RegisterEvent("QUEST_WATCH_UPDATE", function(_, questId) QuestEventHandler.QuestWatchUpdate(questId) end)
     Questie:RegisterEvent("QUEST_AUTOCOMPLETE", function(_, questId) QuestEventHandler.QuestAutoComplete(questId) end)
     Questie:RegisterEvent("UNIT_QUEST_LOG_CHANGED", function(_, unitTarget) QuestEventHandler.UnitQuestLogChanged(unitTarget) end)
-    Questie:RegisterEvent("CURRENCY_DISPLAY_UPDATE", QuestEventHandler.CurrencyDisplayUpdate)
-    Questie:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE", function(_, eventType) QuestEventHandler.PlayerInteractionManagerFrameHide(eventType) end)
+    if QuestieCompat.IsEventValid("CURRENCY_DISPLAY_UPDATE") then
+        Questie:RegisterEvent("CURRENCY_DISPLAY_UPDATE", QuestEventHandler.CurrencyDisplayUpdate)
+    end
+    if QuestieCompat.IsEventValid("PLAYER_INTERACTION_MANAGER_FRAME_HIDE") then
+        Questie:RegisterEvent("PLAYER_INTERACTION_MANAGER_FRAME_HIDE", function(_, eventType) QuestEventHandler.PlayerInteractionManagerFrameHide(eventType) end)
+    else
+        -- Old clients (e.g. Era 1.14) don't have the interaction manager, so we listen to the close events directly
+        for _, event in pairs({"TRADE_CLOSED", "MERCHANT_CLOSED", "BANKFRAME_CLOSED", "MAIL_CLOSED", "AUCTION_HOUSE_CLOSED"}) do
+            Questie:RegisterEvent(event, QuestEventHandler.QuestRelatedFrameClosed)
+        end
+    end
 
     Questie:RegisterEvent("LOADING_SCREEN_ENABLED", function()
         QuestLogCache.OnLoadingScreenEnabled()

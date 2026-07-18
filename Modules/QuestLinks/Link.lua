@@ -217,7 +217,10 @@ _GetObjectiveText = function(objectiveId, objectiveType)
     elseif objectiveType == "reputation" then
         return QuestieReputation.GetFactionName(objectiveId)
     elseif objectiveType == "spell" then
-        return C_Spell.GetSpellName(objectiveId)
+        if C_Spell and C_Spell.GetSpellName then
+            return C_Spell.GetSpellName(objectiveId)
+        end
+        return (GetSpellInfo(objectiveId)) -- Old clients (e.g. Era 1.14) don't have C_Spell.GetSpellName
     end
     return ""
 end

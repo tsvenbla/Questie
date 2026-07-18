@@ -598,3 +598,10 @@ function QuestEventHandler.PlayerInteractionManagerFrameHide(eventType)
 
     _QuestEventHandler:QuestRelatedFrameClosed(eventName)
 end
+
+--- Used on old clients (e.g. Era 1.14) which don't have the PLAYER_INTERACTION_MANAGER_FRAME_HIDE event
+--- and instead listen to the different close events directly
+---@param event string
+function QuestEventHandler.QuestRelatedFrameClosed(event)
+    _QuestEventHandler:QuestRelatedFrameClosed(event)
+end

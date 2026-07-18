@@ -211,7 +211,7 @@ function QuestieJourney:SetupKeybinding()
     Questie.db.global.journeyKeybindDefaultApplied = true
 
     local currentBinding = GetBindingKey("QUESTIE_TOGGLE_JOURNEY")
-    if not currentBinding and not C_KeyBindings.GetBindingByKey(";") then
+    if not currentBinding and not (C_KeyBindings and C_KeyBindings.GetBindingByKey(";")) then
         SetBinding("SEMICOLON", "QUESTIE_TOGGLE_JOURNEY")
         Questie:Debug(Questie.DEBUG_INFO, "Set default keybind ';' for Questie Journey")
     end

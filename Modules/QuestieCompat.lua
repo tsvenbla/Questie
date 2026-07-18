@@ -223,6 +223,25 @@ function QuestieCompat.GetItemCooldown(itemID)
     end
 end
 
+local eventValidationFrame
+
+---Checks whether an event name is known to the client. Older clients (e.g. Era 1.14) are missing
+---several events and error when registering them.
+---@param eventName string
+---@return boolean isValid
+function QuestieCompat.IsEventValid(eventName)
+    if C_EventUtils and C_EventUtils.IsEventValid then
+        return C_EventUtils.IsEventValid(eventName)
+    end
+
+    eventValidationFrame = eventValidationFrame or CreateFrame("Frame")
+    local isValid = pcall(eventValidationFrame.RegisterEvent, eventValidationFrame, eventName)
+    if isValid then
+        eventValidationFrame:UnregisterEvent(eventName)
+    end
+    return isValid
+end
+
 --- Returns the frame that is currently under the mouse cursor.
 function QuestieCompat.GetMouseFocus()
     if GetMouseFoci then

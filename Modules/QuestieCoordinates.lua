@@ -17,7 +17,7 @@ local GetMinimapZoneText = GetMinimapZoneText;
 local IsInInstance = IsInInstance;
 local format = format;
 
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 
 
 local function GetMapTitleText()
