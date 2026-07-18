@@ -351,9 +351,12 @@ end
 ---@param factionId FactionId
 ---@return string name @Name of the faction
 function QuestieReputation.GetFactionName(factionId)
-    local friendReputation = C_GossipInfo.GetFriendshipReputation(factionId)
-    if friendReputation and friendReputation.name and friendReputation.name ~= "" then
-        return friendReputation.name
+    -- Old clients (e.g. Era 1.14) don't have C_GossipInfo.GetFriendshipReputation
+    if C_GossipInfo and C_GossipInfo.GetFriendshipReputation then
+        local friendReputation = C_GossipInfo.GetFriendshipReputation(factionId)
+        if friendReputation and friendReputation.name and friendReputation.name ~= "" then
+            return friendReputation.name
+        end
     end
 
     return select(1, GetFactionInfoByID(factionId))

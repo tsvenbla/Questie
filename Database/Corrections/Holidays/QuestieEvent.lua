@@ -132,6 +132,13 @@ local DMF_START_DAY_BY_FIRST_WEEKDAY = {
 }
 
 function QuestieEvent.Initialize()
+    -- Clients without the calendar API (e.g. Era before 1.15 and some private servers) fall back
+    -- to the date based event detection
+    if (not C_Calendar) or (not C_Calendar.OpenCalendar) or (not QuestieCompat.IsEventValid("CALENDAR_UPDATE_EVENT_LIST")) then
+        QuestieEvent:Load()
+        return
+    end
+
     Questie:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST", function()
         QuestieEvent:Load()
         Questie:UnregisterEvent("CALENDAR_UPDATE_EVENT_LIST")
@@ -190,9 +197,12 @@ function QuestieEvent:Load()
         end
     end
 
-    -- Store the current setting to restore later
-    local shouldShowDmfEvents = GetCVarBool("calendarShowDarkmoon")
-    SetCVar("calendarShowDarkmoon", "1")
+    -- Store the current setting to restore later. The CVar only exists on clients with the calendar API.
+    local shouldShowDmfEvents
+    if C_Calendar then
+        shouldShowDmfEvents = GetCVarBool("calendarShowDarkmoon")
+        SetCVar("calendarShowDarkmoon", "1")
+    end
 
     local dmfIsActive = false
     if Expansions.Current >= Expansions.MoP then
@@ -251,7 +261,9 @@ function QuestieEvent:Load()
         end
     end
 
-    SetCVar("calendarShowDarkmoon", shouldShowDmfEvents and "1" or "0")
+    if C_Calendar then
+        SetCVar("calendarShowDarkmoon", shouldShowDmfEvents and "1" or "0")
+    end
 
     -- TODO: Also handle WotLK which has a different starting schedule
     if (Questie.IsClassic and (((not Questie.IsAnniversaryEra) and (not Questie.IsAnniversaryHardcore)) or (ContentPhases.activePhases.Anniversary >= 3)))

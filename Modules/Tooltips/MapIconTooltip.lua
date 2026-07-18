@@ -29,7 +29,7 @@ local QuestXP = QuestieLoader:ImportModule("QuestXP")
 local ZoneDB = QuestieLoader:ImportModule("ZoneDB")
 
 local HBDPins = LibStub("HereBeDragonsQuestie-Pins-2.0")
-local GetCoinTextureString = C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
+local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 
 
 local REPUTATION_ICON_PATH = QuestieLib.AddonPath .. "Icons\\reputation.blp"

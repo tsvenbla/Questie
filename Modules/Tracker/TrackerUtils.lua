@@ -35,7 +35,7 @@ local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
 ---@type l10n
 local l10n = QuestieLoader:ImportModule("l10n")
 
-local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 local GetItemCount = C_Item.GetItemCount or GetItemCount
 local GetItemSpell = C_Item.GetItemSpell or GetItemSpell
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
